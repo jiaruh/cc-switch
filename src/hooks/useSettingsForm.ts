@@ -91,6 +91,7 @@ export function useSettingsForm(): UseSettingsFormResult {
       geminiConfigDir: sanitizeDir(data.geminiConfigDir),
       opencodeConfigDir: sanitizeDir(data.opencodeConfigDir),
       openclawConfigDir: sanitizeDir(data.openclawConfigDir),
+      shortcutBindingsClaude: data.shortcutBindingsClaude ?? [],
       language: normalizedLanguage,
     };
 
@@ -110,6 +111,7 @@ export function useSettingsForm(): UseSettingsFormResult {
             useAppWindowControls: false,
             enableClaudePluginIntegration: false,
             skipClaudeOnboarding: false,
+            shortcutBindingsClaude: [],
             language: readPersistedLanguage(),
           } as SettingsFormState);
 
@@ -152,6 +154,7 @@ export function useSettingsForm(): UseSettingsFormResult {
         geminiConfigDir: sanitizeDir(serverData.geminiConfigDir),
         opencodeConfigDir: sanitizeDir(serverData.opencodeConfigDir),
         openclawConfigDir: sanitizeDir(serverData.openclawConfigDir),
+        shortcutBindingsClaude: serverData.shortcutBindingsClaude ?? [],
         language: normalizedLanguage,
       };
 

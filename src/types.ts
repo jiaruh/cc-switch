@@ -314,6 +314,14 @@ export interface Settings {
   // Windows: "cmd" | "powershell" | "wt"
   // Linux: "gnome-terminal" | "konsole" | "xfce4-terminal" | "alacritty" | "kitty" | "ghostty"
   preferredTerminal?: string;
+
+  // ===== 全局快捷键绑定 =====
+  shortcutBindingsClaude?: ShortcutBinding[];
+}
+
+export interface ShortcutBinding {
+  shortcut: string;   // e.g. "Cmd+Shift+1"
+  providerId: string;
 }
 
 export interface SessionMeta {

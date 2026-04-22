@@ -167,6 +167,16 @@ impl WebDavSyncSettings {
     }
 }
 
+/// 全局快捷键绑定（精确绑定到特定 provider）
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ShortcutBinding {
+    /// 快捷键字符串，如 "Cmd+Shift+1"（macOS）或 "Ctrl+Shift+1"（Windows/Linux）
+    pub shortcut: String,
+    /// 绑定的 provider ID
+    pub provider_id: String,
+}
+
 /// 应用设置结构
 ///
 /// 存储设备级别设置，保存在本地 `~/.cc-switch/settings.json`，不随数据库同步。
@@ -289,6 +299,10 @@ pub struct AppSettings {
     /// - Linux: "gnome-terminal" | "konsole" | "xfce4-terminal" | "alacritty" | "kitty" | "ghostty"
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preferred_terminal: Option<String>,
+
+    /// Claude 全局快捷键绑定列表：快捷键 → provider_id
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shortcut_bindings_claude: Option<Vec<ShortcutBinding>>,
 }
 
 fn default_show_in_tray() -> bool {
@@ -338,6 +352,7 @@ impl Default for AppSettings {
             backup_interval_hours: None,
             backup_retain_count: None,
             preferred_terminal: None,
+            shortcut_bindings_claude: None,
         }
     }
 }

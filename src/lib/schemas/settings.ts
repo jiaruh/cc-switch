@@ -33,6 +33,11 @@ export const settingsSchema = z.object({
   skillSyncMethod: z.enum(["auto", "symlink", "copy"]).optional(),
   skillStorageLocation: z.enum(["cc_switch", "unified"]).optional(),
 
+  // 全局快捷键绑定（Claude）
+  shortcutBindingsClaude: z.array(
+    z.object({ shortcut: z.string(), providerId: z.string() }),
+  ).optional(),
+
   // WebDAV v2 同步设置（通过专用命令保存，schema 仅用于读取）
   webdavSync: z
     .object({

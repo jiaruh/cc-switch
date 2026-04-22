@@ -15,6 +15,12 @@ export interface ProviderSortUpdate {
 export interface ProviderSwitchEvent {
   appType: AppId;
   providerId: string;
+  /** Provider name for display in toasts */
+  providerName?: string;
+  /** Source of the switch: "tray" | "shortcut" | "ui" | "failover" */
+  source?: string;
+  /** Warnings returned from the switch */
+  warnings?: string[];
 }
 
 export interface SwitchResult {

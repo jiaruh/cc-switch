@@ -272,6 +272,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             // 预先刷新 Store 覆盖配置，确保后续路径读取正确（日志/数据库等）
             app_store::refresh_app_config_dir_override(app.handle());
@@ -1015,6 +1016,11 @@ pub fn run() {
                 }
             }
 
+            // 注册全局快捷键（Claude provider 切换）
+            let app_handle = app.handle().clone();
+            if let Err(e) = register_global_shortcuts(&app_handle) {
+                log::error!("注册全局快捷键失败: {e}");
+            }
 
             Ok(())
         })
@@ -1745,4 +1751,91 @@ fn show_database_init_error_dialog(
             exit_text.to_string(),
         ))
         .blocking_show()
+}
+
+/// 注册 Claude 全局快捷键绑定
+fn register_global_shortcuts(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutExt};
+
+    let settings = crate::settings::get_settings();
+    let bindings = settings.shortcut_bindings_claude.as_ref();
+
+    for binding in bindings.iter().flatten() {
+        let shortcut_str = binding.shortcut.clone();
+        let provider_id = binding.provider_id.clone();
+        let app_handle = app.clone();
+
+        log::info!("注册全局快捷键: {} → {}", shortcut_str, provider_id);
+
+        let shortcut: tauri_plugin_global_shortcut::Shortcut = shortcut_str.parse()
+            .map_err(|e: tauri_plugin_global_shortcut::Error| {
+                format!("解析快捷键 '{}' 失败: {e}", shortcut_str)
+            })?;
+
+        app.global_shortcut().on_shortcut(shortcut, move |_app, _shortcut, event| {
+            use tauri_plugin_global_shortcut::ShortcutState;
+            if event.state != ShortcutState::Pressed {
+                return;
+            }
+
+            log::info!("全局快捷键触发: 切换到 provider {}", provider_id);
+
+            let app_clone = app_handle.clone();
+            let provider_id_clone = provider_id.clone();
+
+            std::thread::spawn(move || {
+                let rt = match tokio::runtime::Runtime::new() {
+                    Ok(rt) => rt,
+                    Err(e) => {
+                        log::error!("创建 tokio runtime 失败: {}", e);
+                        return;
+                    }
+                };
+                rt.block_on(async {
+                    let state = app_clone.state::<crate::store::AppState>();
+
+                    // 调用 switch_provider 核心逻辑
+                    match crate::services::ProviderService::switch(
+                        &state,
+                        crate::app_config::AppType::Claude,
+                        &provider_id_clone,
+                    ) {
+                        Ok(result) => {
+                            log::info!("快捷键切换 provider 成功: {}", provider_id_clone);
+
+                            // 获取 provider 名称用于通知
+                            let provider_name = state
+                                .db
+                                .get_all_providers(crate::app_config::AppType::Claude.as_str())
+                                .ok()
+                                .and_then(|providers| {
+                                    providers.get(&provider_id_clone)
+                                        .map(|p| p.name.clone())
+                                })
+                                .unwrap_or_else(|| provider_id_clone.clone());
+
+                            // 发射事件到前端（用于 toast 通知）
+                            let payload = serde_json::json!({
+                                "appType": "claude",
+                                "providerId": provider_id_clone,
+                                "providerName": provider_name,
+                                "source": "shortcut",
+                                "warnings": result.warnings,
+                            });
+                            let _ = app_clone.emit("provider-switched", payload);
+                        }
+                        Err(e) => {
+                            log::error!("快捷键切换 provider 失败: {}", e);
+                        }
+                    }
+
+                    // 刷新托盘菜单
+                    crate::tray::refresh_tray_menu(&app_clone);
+                });
+            });
+        })?;
+    }
+
+    log::info!("全局快捷键注册完成，共 {} 个绑定", bindings.map_or(0, |b| b.len()));
+    Ok(())
 }

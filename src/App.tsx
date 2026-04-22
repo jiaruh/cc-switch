@@ -339,6 +339,11 @@ function App() {
             if (event.appType === activeApp) {
               await refetch();
             }
+
+            // Show toast on shortcut-triggered switch
+            if (event.source === "shortcut" && event.providerName) {
+              toast.success(t("notifications.providerSwitched", { name: event.providerName }));
+            }
           },
         );
       } catch (error) {

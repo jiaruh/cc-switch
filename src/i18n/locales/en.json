@@ -211,7 +211,8 @@
     "backfillWarning": "Switched successfully, but failed to save changes back to the previous provider",
     "windowControlFailed": "Window control failed: {{error}}",
     "officialBlockedByProxy": "Cannot switch to official provider while local routing is active. Using routing with official APIs may cause account bans.",
-    "proxyOfficialWarning": "Current provider {{name}} is official. Consider switching to a third-party provider before using local routing."
+    "proxyOfficialWarning": "Current provider {{name}} is official. Consider switching to a third-party provider before using local routing.",
+    "providerSwitched": "Switched to {{name}}"
   },
   "confirm": {
     "deleteProvider": "Delete Provider",
@@ -656,7 +657,17 @@
       "defaultCostMultiplierRequired": "Default multiplier is required",
       "defaultCostMultiplierInvalid": "Invalid multiplier format"
     },
-    "saveFailedGeneric": "Save failed, please try again"
+    "saveFailedGeneric": "Save failed, please try again",
+    "shortcut": {
+      "title": "Global Shortcuts",
+      "description": "Bind global keyboard shortcuts to Claude providers for quick switching from any app.",
+      "selectProvider": "Select provider...",
+      "pressKey": "Press a key combination...",
+      "remove": "Remove binding",
+      "bound": "Bound {{shortcut}} to {{provider}}",
+      "duplicate": "Shortcut {{shortcut}} is already bound to {{provider}}",
+      "noMoreProviders": "All providers already have shortcuts"
+    }
   },
   "apps": {
     "claude": "Claude",

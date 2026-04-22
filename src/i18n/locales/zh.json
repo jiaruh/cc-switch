@@ -211,7 +211,8 @@
     "backfillWarning": "切换成功，但旧供应商配置回填失败，您手动修改的配置可能未保存",
     "windowControlFailed": "窗口控制失败：{{error}}",
     "officialBlockedByProxy": "本地路由模式下不能切换到官方供应商，使用路由访问官方 API 可能导致账号被封禁",
-    "proxyOfficialWarning": "当前供应商 {{name}} 是官方供应商，建议切换到第三方供应商后再使用本地路由"
+    "proxyOfficialWarning": "当前供应商 {{name}} 是官方供应商，建议切换到第三方供应商后再使用本地路由",
+    "providerSwitched": "已切换到 {{name}}"
   },
   "confirm": {
     "deleteProvider": "删除供应商",
@@ -656,7 +657,17 @@
       "defaultCostMultiplierRequired": "默认倍率不能为空",
       "defaultCostMultiplierInvalid": "默认倍率格式不正确"
     },
-    "saveFailedGeneric": "保存失败，请重试"
+    "saveFailedGeneric": "保存失败，请重试",
+    "shortcut": {
+      "title": "全局快捷键",
+      "description": "为 Claude Provider 绑定全局快捷键，在任何应用中快速切换。",
+      "selectProvider": "选择 Provider...",
+      "pressKey": "按下组合键...",
+      "remove": "移除绑定",
+      "bound": "已绑定 {{shortcut}} → {{provider}}",
+      "duplicate": "快捷键 {{shortcut}} 已被 {{provider}} 占用",
+      "noMoreProviders": "所有 Provider 均已绑定快捷键"
+    }
   },
   "apps": {
     "claude": "Claude",
